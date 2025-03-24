@@ -1,0 +1,1 @@
+This is a github repository for storing all of the Labs that are related to the MSDS course at USF.
