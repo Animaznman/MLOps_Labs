@@ -1,30 +1,30 @@
 schema: '2.0'
 stages:
   prepare:
-    cmd: python src/create_features.py
+    cmd: python src/chocolate_features.py
     deps:
-    - path: data/adult.data
+    - path: data/flavors_of_cacao.csv
       hash: md5
-      md5: 37e0eaca20883876a1fbe0553fb806b4
-      size: 5977437
-    - path: data/adult.test
+      md5: 24ae87eda0ec2b6cbc0d252fd5e2b9a5
+      size: 127734
+    - path: src/chocolate_features.py
       hash: md5
-      md5: 366c746021dc50ad9d933d2817612fc9
-      size: 2003132
-    - path: src/create_features.py
-      hash: md5
-      md5: b93aea27ba45f8b24bdd52928f1f2b99
-      size: 2564
+      md5: f9b6516d9f319c967e8cb8b2434dbc34
+      size: 3285
+    params:
+      params.yaml:
+        features.data: data/flavors_of_cacao.csv
+        features.target: rating
     outs:
-    - path: data/pipeline.pkl
+    - path: data/chocolate_pipeline.pkl
       hash: md5
-      md5: 125315e07f843768ace04f205b0429c9
-      size: 6072
-    - path: data/processed_test_data.csv
+      md5: eead7698e3337a4900742ca47f6ac705
+      size: 29141
+    - path: data/chocolate_processed_test.csv
       hash: md5
-      md5: 06f4496470f37f099a30c36a4cba5556
-      size: 5409947
-    - path: data/processed_train_data.csv
+      md5: 4a8704bb789c2a6a5fe5e0e3f8b94b49
+      size: 2131963
+    - path: data/chocolate_processed_train.csv
       hash: md5
-      md5: 5b1d76e8d8d92fefb4fe82708720f810
-      size: 16252021
+      md5: 66ce70f77d196e79a2fc5cb41fd8c9b9
+      size: 8512778

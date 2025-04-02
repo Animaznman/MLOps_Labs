@@ -1,0 +1,3 @@
+features:
+  target: "rating"
+  data: "data/flavors_of_cacao.csv"

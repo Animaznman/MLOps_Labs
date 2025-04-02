@@ -3,3 +3,6 @@
 /pipeline.pkl
 /processed_train_data.csv
 /processed_test_data.csv
+/chocolate_pipeline.pkl
+/chocolate_processed_train.csv
+/chocolate_processed_test.csv
