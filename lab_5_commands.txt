@@ -1,0 +1,70 @@
+instance name = mlops
+username = animaznman
+password = H0tP1nkT1g3r
+db-name = mlops-lab5
+bucket name = mlops-bucket-lab5
+repo name = mlops-repo
+acct name = mlops-acct
+project id = mlflow-gcp-lab5
+tag = latest
+
+gcloud init
+
+gcloud sql instances create mlops --database-version=POSTGRES_15 --region=us-west2 --tier=db-f1-micro --storage-type=HDD --storage-size=10GB --authorized-networks=0.0.0.0/0
+
+Create User/Password
+gcloud sql users create animaznman --instance=mlops --password=H0tP1nkT1g3r
+
+Creating a database
+gcloud sql databases create mlops-lab5 --instance=mlops
+
+Creating a bucket
+gcloud storage buckets create gs://mlops-bucket-lab5
+
+Creating a repository
+gcloud artifacts repositories create mlops-repo --location=us-west2 --repository-format=docker
+
+Creating service account
+gcloud iam service-accounts create mlops-acct
+
+Adding roles
+gcloud projects add-iam-policy-binding mlflow-gcp-lab5 --member="serviceAccount:mlops-acct@mlflow-gcp-lab5.iam.gserviceaccount.com" --role="roles/cloudsql.editor"
+gcloud projects add-iam-policy-binding mlflow-gcp-lab5 --member="serviceAccount:mlops-acct@mlflow-gcp-lab5.iam.gserviceaccount.com" --role="roles/storage.objectAdmin"
+gcloud projects add-iam-policy-binding mlflow-gcp-lab5 --member="serviceAccount:mlops-acct@mlflow-gcp-lab5.iam.gserviceaccount.com" --role="roles/secretmanager.secretAccessor"
+gcloud projects add-iam-policy-binding mlflow-gcp-lab5 --member="serviceAccount:mlops-acct@mlflow-gcp-lab5.iam.gserviceaccount.com" --role="roles/artifactregistry.admin"
+gcloud projects add-iam-policy-binding mlflow-gcp-lab5 --member="serviceAccount:mlops-acct@mlflow-gcp-lab5.iam.gserviceaccount.com" --role="roles/clouddeploy.serviceAgent"
+gcloud projects add-iam-policy-binding mlflow-gcp-lab5 --member="serviceAccount:mlops-acct@mlflow-gcp-lab5.iam.gserviceaccount.com" --role="roles/cloudfunctions.admin"
+
+Secrets
+gcloud iam service-accounts keys create sa-private-key.json --iam-account=mlops-acct@mlflow-gcp-lab5.iam.gserviceaccount.com
+
+Generate secret json
+gcloud secrets create access_keys --data-file=sa-private-key.json
+
+Get IP address
+gcloud sql instances describe mlops
+35.235.98.246
+35.235.84.69
+gcloud secrets create database_url
+
+Create Secret Database URL
+echo -n "postgresql://animaznman:H0tP1nkT1g3r@<ip>/mlops-lab5" | gcloud secrets versions add database_url --data-file=-
+gcloud secrets create bucket_url
+
+More buckets (secret)
+echo -n "gs://mlops-bucket-lab5/mlruns" | gcloud secrets versions add bucket_url --data-file=-
+
+Authorize building
+gcloud auth configure-docker us-west2-docker.pkg.dev
+
+Build the Docker image
+docker build --platform linux/amd64 -t "us-west2-docker.pkg.dev/mlflow-gcp-lab5/mlops-repo/mlflow:latest" .
+
+ALTERNATE Google Cloud Builds
+gcloud builds submit --tag us-west2-docker.pkg.dev/mlflow-gcp-lab5/mlops-repo/mlflow:latest
+
+Push the image
+docker push "us-west2-docker.pkg.dev/mlflow-gcp-lab5/mlops-repo/mlflow:latest"
+
+GC Run
+gcloud run deploy mlops-service --image "us-west2-docker.pkg.dev/mlflow-gcp-lab5/mlops-repo/mlflow:latest" --region "us-west2" --service-account "mlops-acct" --update-secrets=/secrets/credentials=access_keys:latest --update-secrets=POSTGRESQL_URL=database_url:latest --update-secrets=STORAGE_URL=bucket_url:latest --memory 2G --allow-unauthenticate --port 8080
