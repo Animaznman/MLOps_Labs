@@ -6,7 +6,7 @@ bucket name = mlops-bucket-lab5
 repo name = mlops-repo
 acct name = mlops-acct
 project id = mlflow-gcp-lab5
-tag = latest
+tag = username
 
 gcloud init
 
@@ -58,13 +58,13 @@ Authorize building
 gcloud auth configure-docker us-west2-docker.pkg.dev
 
 Build the Docker image
-docker build --platform linux/amd64 -t "us-west2-docker.pkg.dev/mlflow-gcp-lab5/mlops-repo/mlflow:latest" .
+docker build --platform linux/amd64 -t "us-west2-docker.pkg.dev/mlflow-gcp-lab5/mlops-repo/mlflow:username" .
 
 ALTERNATE Google Cloud Builds
-gcloud builds submit --tag us-west2-docker.pkg.dev/mlflow-gcp-lab5/mlops-repo/mlflow:latest
+gcloud builds submit --tag us-west2-docker.pkg.dev/mlflow-gcp-lab5/mlops-repo/mlflow:username
 
 Push the image
-docker push "us-west2-docker.pkg.dev/mlflow-gcp-lab5/mlops-repo/mlflow:latest"
+docker push "us-west2-docker.pkg.dev/mlflow-gcp-lab5/mlops-repo/mlflow:username"
 
 GC Run
-gcloud run deploy mlops-service --image "us-west2-docker.pkg.dev/mlflow-gcp-lab5/mlops-repo/mlflow:latest" --region "us-west2" --service-account "mlops-acct" --update-secrets=/secrets/credentials=access_keys:latest --update-secrets=POSTGRESQL_URL=database_url:latest --update-secrets=STORAGE_URL=bucket_url:latest --memory 2G --allow-unauthenticate --port 8080
+gcloud run deploy mlops-service --image "us-west2-docker.pkg.dev/mlflow-gcp-lab5/mlops-repo/mlflow:username" --region "us-west2" --service-account "mlops-acct" --update-secrets=/secrets/credentials=access_keys:username --update-secrets=POSTGRESQL_URL=database_url:username --update-secrets=STORAGE_URL=bucket_url:username --memory 2G --allow-unauthenticated --port 8080

@@ -1,16 +1,17 @@
 FROM python:3.12-slim
 
-WORKDIR /
+WORKDIR /app
 
-COPY requirements.txt requirements.txt   
-COPY server.sh server.sh
-
-ENV GOOGLE_APPLICATION_CREDENTIALS='./secrets/credentials'
-
+# Copy files
+COPY requirements.txt /app/
 RUN pip install --upgrade pip && pip install -r requirements.txt
+
+COPY server.sh /app/
+RUN chmod +x /app/server.sh
+
+ENV GOOGLE_APPLICATION_CREDENTIALS='/app/secrets/credentials'
 
 EXPOSE 8080
 
-RUN chmod +x server.sh
-
-ENTRYPOINT ["./server.sh"]
+# Ensure server.sh runs with sh
+ENTRYPOINT ["sh", "/app/server.sh"]

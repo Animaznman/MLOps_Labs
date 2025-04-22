@@ -1,3 +1,5 @@
+#!/bin/bash
+
 mlflow db upgrade $POSTGRESQL_URL
 mlflow server \
   --host 0.0.0.0 \
